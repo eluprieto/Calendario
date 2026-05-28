@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Nail Studio – Administración</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ═══ LOGIN ════════════════════════════════════════════════════════════ -->
+  <div id="login-section" class="login-page" style="display:none">
+    <div class="login-card">
+      <span class="login-nail">💅</span>
+      <h1>Panel Admin</h1>
+      <p class="sub">Inicia sesión para gestionar las reservas</p>
+
+      <form onsubmit="adminLogin(event)" novalidate>
+        <div class="form-group">
+          <label for="admin-email">Email</label>
+          <input type="email" id="admin-email"
+                 placeholder="admin@nail.com"
+                 required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="admin-password">Contraseña</label>
+          <input type="password" id="admin-password"
+                 placeholder="••••••••"
+                 required autocomplete="current-password">
+        </div>
+        <div id="login-error" class="error-msg" role="alert"></div>
+        <button type="submit" id="login-btn" class="btn-primary" style="margin-top:.5rem">
+          Iniciar sesión
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ DASHBOARD ════════════════════════════════════════════════════════ -->
+  <div id="dashboard-section" style="display:none">
+
+    <header class="admin-header">
+      <span class="admin-brand">💅 Nail Studio</span>
+      <span class="admin-title">Panel de Administración</span>
+      <button onclick="adminLogout()" class="btn-logout">Salir</button>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- Stats -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-num rose" id="stat-today">–</div>
+          <div class="stat-label">Hoy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num lilac" id="stat-upcoming">–</div>
+          <div class="stat-label">Próximas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num mint" id="stat-done">–</div>
+          <div class="stat-label">Listas</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" onclick="showTab('bookings', event)" role="tab">
+          Reservas
+        </button>
+        <button class="tab-btn" onclick="showTab('blocked', event)" role="tab">
+          Bloquear Horarios
+        </button>
+      </div>
+
+      <!-- ── Tab: Reservas ────────────────────────────── -->
+      <div id="tab-bookings" class="tab-panel active" role="tabpanel">
+        <div class="tab-header">
+          <h3>Próximas Reservas</h3>
+          <button class="btn-refresh" onclick="loadBookings()">↻ Actualizar</button>
+        </div>
+        <div id="bookings-list">
+          <div class="loading"><div class="spinner"></div> Cargando…</div>
+        </div>
+      </div>
+
+      <!-- ── Tab: Bloquear Horarios ───────────────────── -->
+      <div id="tab-blocked" class="tab-panel" role="tabpanel">
+        <div class="block-section">
+
+          <div class="block-form-card">
+            <h3>Bloquear horario</h3>
+            <form onsubmit="blockSlot(event)" novalidate>
+              <div class="form-group">
+                <label for="block-date">Fecha</label>
+                <input type="date" id="block-date" required>
+              </div>
+              <div class="form-group">
+                <label for="block-time">Hora</label>
+                <select id="block-time" required>
+                  <option value="">Selecciona una hora…</option>
+                  <option value="09:00">09:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="12:00">12:00</option>
+                  <option value="13:00">13:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                  <option value="17:00">17:00</option>
+                  <option value="18:00">18:00</option>
+                </select>
+              </div>
+              <div id="block-error" class="error-msg" role="alert"></div>
+              <button type="submit" class="btn-block">Bloquear horario</button>
+            </form>
+          </div>
+
+          <div class="blocked-list-card">
+            <h3>Horarios bloqueados</h3>
+            <div id="blocked-slots-list">
+              <div class="loading"><div class="spinner"></div> Cargando…</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

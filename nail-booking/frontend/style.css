@@ -1,0 +1,1276 @@
+/* ═══════════════════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+═══════════════════════════════════════════════════════════════ */
+:root {
+  /* Palette */
+  --rose:         #e8789a;
+  --rose-light:   #fde8f0;
+  --rose-dark:    #c4527a;
+  --rose-faint:   #fff2f7;
+  --lilac:        #c8a4e0;
+  --lilac-light:  #f4eeff;
+  --lilac-dark:   #9a72c4;
+  --mint:         #7ecba4;
+  --mint-light:   #e8f7f0;
+  --mint-dark:    #4fa87e;
+  --cream:        #fff8fb;
+  --white:        #ffffff;
+  --text:         #3d2438;
+  --text-mid:     #7a4f68;
+  --text-soft:    #b890a8;
+  --error-bg:     #fff0f3;
+  --error:        #c0344a;
+  --border:       rgba(232,120,154,.18);
+
+  /* Shadows */
+  --shadow-sm:    0 2px 12px rgba(180,60,100,.08);
+  --shadow-md:    0 6px 28px rgba(180,60,100,.14);
+  --shadow-lg:    0 16px 56px rgba(180,60,100,.18);
+
+  /* Radii */
+  --r-sm:   10px;
+  --r-md:   16px;
+  --r-lg:   22px;
+  --r-pill: 999px;
+
+  /* Touch target */
+  --touch: 48px;
+
+  /* Transitions */
+  --t: .2s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET + BASE  (mobile-first, 375px+)
+═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Dancing Script for all headings */
+h1, h2, h3, h4 {
+  font-family: 'Dancing Script', cursive;
+  line-height: 1.25;
+}
+
+a    { color: var(--rose); text-decoration: none; }
+img  { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: inherit; border: none; }
+
+/* All interactive elements: 48px minimum touch target */
+button,
+input,
+select,
+[role="button"] {
+  min-height: var(--touch);
+}
+
+/* 16px minimum on all inputs — PREVENTS iOS zoom on focus */
+input,
+select,
+textarea {
+  font-size: 16px;
+  font-family: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+}
+
+/* ── :active tap feedback ── */
+button:active:not(:disabled),
+.cal-day:not(.disabled):active,
+.time-slot.available:active {
+  transform: scale(.95);
+  transition: transform .1s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════════════════════ */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+}
+
+.container {
+  width: 100%;
+  padding-inline: 1rem;
+  /* Desktop: cap & center */
+}
+
+@media (min-width: 700px) {
+  .container {
+    max-width: 960px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO (booking page)
+═══════════════════════════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(160deg, var(--rose-light) 0%, var(--lilac-light) 100%);
+  text-align: center;
+  padding: 2.25rem 1.25rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle dot pattern */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(232,120,154,.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.hero-nail {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: .35rem;
+  filter: drop-shadow(0 4px 10px rgba(200,80,130,.3));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+
+.hero h1 {
+  font-size: 2.6rem;
+  color: var(--rose-dark);
+  letter-spacing: -.01em;
+}
+
+.hero p {
+  margin-top: .35rem;
+  font-size: 1rem;
+  color: var(--text-mid);
+  letter-spacing: .05em;
+}
+
+.hero-wave {
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 100%; line-height: 0;
+}
+
+@media (min-width: 700px) {
+  .hero { padding: 3.5rem 1.25rem 5rem; }
+  .hero h1 { font-size: 3.4rem; }
+  .hero p  { font-size: 1.1rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOKING SECTION
+═══════════════════════════════════════════════════════════════ */
+.booking-section {
+  padding: 1.75rem 0 7rem; /* 7rem bottom = room for sticky CTA */
+}
+
+@media (min-width: 700px) {
+  .booking-section { padding-bottom: 3rem; }
+}
+
+.section-title {
+  font-size: 2rem;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: .3rem;
+}
+
+.section-sub {
+  text-align: center;
+  color: var(--text-soft);
+  font-size: .92rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (min-width: 700px) {
+  .section-title { font-size: 2.4rem; }
+  .section-sub   { margin-bottom: 2.25rem; }
+}
+
+/* ── Layout: single column on mobile, 2-col on tablet+ ── */
+.booking-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 700px) {
+  .booking-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    align-items: start;
+  }
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 1.1rem;
+  /* No horizontal overflow */
+  overflow: hidden;
+}
+
+@media (min-width: 700px) {
+  .card { padding: 1.6rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════════════════════════════ */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .9rem;
+}
+
+.calendar-nav h3 {
+  font-size: 1.3rem;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.nav-btn {
+  background: var(--rose-faint);
+  border: 1.5px solid var(--border);
+  color: var(--rose-dark);
+  width: var(--touch);
+  height: var(--touch);
+  border-radius: var(--r-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: background var(--t);
+  /* no shrink below touch target */
+  flex-shrink: 0;
+}
+
+.nav-btn:hover   { background: var(--rose-light); }
+.nav-btn:active  { transform: scale(.92); }
+
+/* Calendar grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-header {
+  text-align: center;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  padding: 3px 0 7px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.cal-day {
+  /* 48px touch target via min-height; aspect-ratio makes it square */
+  min-height: var(--touch);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--t), color var(--t);
+  /* Prevent text overflow in tiny cells */
+  overflow: hidden;
+}
+
+.cal-day:not(.disabled):not(.empty):hover {
+  background: var(--rose-light);
+  color: var(--rose-dark);
+}
+
+.cal-day.today {
+  background: var(--rose-faint);
+  color: var(--rose-dark);
+  font-weight: 800;
+}
+
+.cal-day.selected {
+  background: var(--rose) !important;
+  color: var(--white) !important;
+  box-shadow: 0 3px 10px rgba(232,120,154,.45);
+}
+
+.cal-day.disabled {
+  color: #d8c8d0;
+  cursor: default;
+}
+
+.cal-day.empty { cursor: default; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TIME SLOTS
+   Mobile: full-width vertical stack — big, tappable pill buttons
+   Desktop: compact grid
+═══════════════════════════════════════════════════════════════ */
+.slots-section {
+  margin-top: 1.25rem;
+}
+
+.slots-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-bottom: .75rem;
+}
+
+/* Mobile: stacked vertical list */
+.slots-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+@media (min-width: 700px) {
+  .slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: .5rem;
+  }
+}
+
+.time-slot {
+  width: 100%;
+  min-height: var(--touch);
+  padding: .75rem 1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid transparent;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  transition: background var(--t), color var(--t), border-color var(--t), box-shadow var(--t);
+}
+
+.time-slot.available {
+  background: var(--mint-light);
+  color: var(--mint-dark);
+  border-color: rgba(126,203,164,.3);
+}
+
+.time-slot.available:hover {
+  background: var(--mint);
+  color: var(--white);
+  border-color: var(--mint);
+}
+
+.time-slot.available.selected {
+  background: var(--mint-dark);
+  color: var(--white);
+  border-color: var(--mint-dark);
+  box-shadow: 0 4px 14px rgba(79,168,126,.35);
+}
+
+.time-slot.unavailable {
+  background: #f3eeef;
+  color: #c8b8c0;
+  border-color: transparent;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Show a "taken" indicator on unavailable slots */
+.time-slot.unavailable::after {
+  content: ' ✕';
+  font-size: .75em;
+  opacity: .6;
+}
+
+.slots-empty {
+  font-size: .9rem;
+  color: var(--text-soft);
+  text-align: center;
+  padding: .75rem;
+  background: var(--rose-faint);
+  border-radius: var(--r-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOKING FORM
+═══════════════════════════════════════════════════════════════ */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-bottom: .4rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  /* 16px is the critical minimum — any smaller triggers iOS auto-zoom */
+  font-size: 16px;
+  padding: .75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--rose-faint);
+  color: var(--text);
+  transition: border-color var(--t), box-shadow var(--t), background var(--t);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--rose);
+  box-shadow: 0 0 0 4px rgba(232,120,154,.12);
+  background: var(--white);
+}
+
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4527a' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* Booking selection summary pill */
+.booking-summary {
+  display: none;
+  background: var(--lilac-light);
+  border: 1px dashed rgba(200,164,224,.5);
+  border-radius: var(--r-md);
+  padding: .8rem 1rem;
+  margin-bottom: 1rem;
+  font-size: .9rem;
+  color: var(--lilac-dark);
+  font-weight: 600;
+}
+
+.booking-summary.visible { display: block; }
+
+/* ── Primary button (inside form, shown on desktop only) ── */
+.btn-primary {
+  width: 100%;
+  min-height: var(--touch);
+  padding: .85rem 1rem;
+  background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+  color: var(--white);
+  border-radius: var(--r-pill);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  transition: opacity var(--t), transform var(--t), box-shadow var(--t);
+  box-shadow: 0 4px 20px rgba(196,82,122,.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: .92;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(196,82,122,.4);
+}
+
+.btn-primary:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Hide in-form button on mobile; the sticky bar takes over */
+.btn-in-form { display: none; }
+
+@media (min-width: 700px) {
+  .btn-in-form { display: flex; align-items: center; justify-content: center; }
+}
+
+/* ── Error message ── */
+.error-msg {
+  display: none;
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid rgba(192,52,74,.2);
+  border-radius: var(--r-sm);
+  padding: .75rem 1rem;
+  font-size: .9rem;
+  margin-bottom: .9rem;
+  line-height: 1.4;
+}
+
+.error-msg.visible { display: block; }
+
+/* ── Secondary button ── */
+.btn-secondary {
+  min-height: var(--touch);
+  padding: .75rem 2rem;
+  background: rgba(255,255,255,.85);
+  color: var(--rose-dark);
+  border: 2px solid var(--rose);
+  border-radius: var(--r-pill);
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background var(--t), color var(--t);
+}
+
+.btn-secondary:hover {
+  background: var(--rose);
+  color: var(--white);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STICKY CTA BAR  (mobile-only)
+   Stays at bottom with confirm button always reachable
+═══════════════════════════════════════════════════════════════ */
+.sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  /* Account for notch / home indicator on modern iPhones */
+  padding: .75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(255,248,251,.96);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  box-shadow: 0 -4px 20px rgba(180,60,100,.08);
+}
+
+.sticky-cta-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sticky-cta-info .cta-prompt {
+  font-size: .8rem;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.sticky-cta-info .cta-selection {
+  font-size: .9rem;
+  color: var(--text-mid);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sticky-btn {
+  flex-shrink: 0;
+  min-height: var(--touch);
+  padding: .75rem 1.4rem;
+  background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+  color: var(--white);
+  border-radius: var(--r-pill);
+  font-size: .95rem;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(196,82,122,.35);
+  transition: opacity var(--t), transform var(--t);
+  white-space: nowrap;
+}
+
+.sticky-btn:hover   { opacity: .9; }
+.sticky-btn:active  { transform: scale(.95); }
+.sticky-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Hide sticky bar on desktop — button lives inside the form */
+@media (min-width: 700px) {
+  .sticky-cta { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONFIRMATION OVERLAY
+   Full-screen on mobile, centered card on desktop
+═══════════════════════════════════════════════════════════════ */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: linear-gradient(160deg, var(--rose-light) 0%, var(--lilac-light) 55%, var(--mint-light) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem calc(2rem + env(safe-area-inset-bottom, 0px));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+  overflow-y: auto;
+}
+
+.confirm-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.confirm-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  padding: 2.25rem 1.75rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: cardPop .45s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+@keyframes cardPop {
+  from { transform: scale(.88) translateY(20px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+.confirm-emoji {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: .75rem;
+  animation: bounce .6s cubic-bezier(.34,1.56,.64,1) .15s both;
+}
+
+@keyframes bounce {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+.confirm-card h2 {
+  font-size: 2rem;
+  color: var(--mint-dark);
+  margin-bottom: .3rem;
+}
+
+.confirm-card > p {
+  color: var(--text-soft);
+  font-size: .95rem;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-details {
+  background: var(--rose-faint);
+  border-radius: var(--r-md);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.75rem;
+  text-align: left;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .5rem;
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .92rem;
+}
+
+.confirm-row:last-child { border-bottom: none; }
+
+.confirm-row .c-label {
+  color: var(--text-soft);
+  font-size: .76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  flex-shrink: 0;
+}
+
+.confirm-row .c-value {
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOADING SPINNER
+═══════════════════════════════════════════════════════════════ */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  padding: 1.5rem;
+  color: var(--text-soft);
+  font-size: .9rem;
+}
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 3px solid var(--rose-light);
+  border-top-color: var(--rose);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  /* On mobile, put toasts above the sticky bar */
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  left: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  pointer-events: none;
+}
+
+@media (min-width: 700px) {
+  .toast-container {
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: 300px;
+  }
+}
+
+.toast {
+  background: var(--text);
+  color: var(--white);
+  padding: .85rem 1.1rem;
+  border-radius: var(--r-md);
+  font-size: .9rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn .3s ease;
+  pointer-events: auto;
+}
+
+.toast.success { background: var(--mint-dark); }
+.toast.error   { background: var(--error); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — LOGIN PAGE
+═══════════════════════════════════════════════════════════════ */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--rose-light) 0%, var(--lilac-light) 100%);
+  padding: 1.5rem 1rem;
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  /* Full width on small phones, capped on larger screens */
+  width: 100%;
+  max-width: 420px;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+}
+
+@media (min-width: 480px) {
+  .login-card { padding: 2.8rem 2.25rem; }
+}
+
+.login-nail {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: .6rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.login-card h1 {
+  font-size: 1.9rem;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+
+.login-card .sub {
+  color: var(--text-soft);
+  font-size: .9rem;
+  margin-bottom: 1.75rem;
+}
+
+.login-card .form-group { text-align: left; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — DASHBOARD HEADER
+═══════════════════════════════════════════════════════════════ */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(253,232,240,.95);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.admin-brand {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.3rem;
+  color: var(--rose-dark);
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Title hidden on mobile — brand already identifies the page */
+.admin-title {
+  display: none;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+
+@media (min-width: 600px) {
+  .admin-title { display: block; flex: 1; }
+  .admin-brand { flex: 0; }
+  .admin-header { padding: .9rem 1.5rem; }
+}
+
+.btn-logout {
+  min-height: var(--touch);
+  padding: .5rem 1.1rem;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  color: var(--text-mid);
+  border-radius: var(--r-pill);
+  font-size: .85rem;
+  font-weight: 700;
+  transition: all var(--t);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.btn-logout:hover {
+  background: var(--rose-light);
+  color: var(--rose-dark);
+  border-color: var(--rose);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — MAIN LAYOUT
+═══════════════════════════════════════════════════════════════ */
+.admin-main {
+  padding: 1.25rem 1rem 3rem;
+}
+
+@media (min-width: 700px) {
+  .admin-main {
+    max-width: 960px;
+    margin-inline: auto;
+    padding: 1.75rem 1.5rem 3rem;
+  }
+}
+
+/* ── Stats bar ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .6rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: .9rem .75rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+@media (min-width: 480px) {
+  .stat-card { padding: 1.1rem 1.2rem; text-align: left; }
+}
+
+.stat-num {
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.stat-num.rose  { color: var(--rose-dark); }
+.stat-num.lilac { color: var(--lilac-dark); }
+.stat-num.mint  { color: var(--mint-dark); }
+
+.stat-label {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-top: .2rem;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1.5rem;
+  gap: .25rem;
+}
+
+.tab-btn {
+  min-height: var(--touch);
+  padding: .6rem 1.1rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  transition: color var(--t), border-color var(--t);
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+}
+
+.tab-btn:hover   { color: var(--rose-dark); }
+.tab-btn:active  { transform: scale(.97); }
+.tab-btn.active  {
+  color: var(--rose-dark);
+  border-bottom-color: var(--rose);
+}
+
+/* ── Tab panels ── */
+.tab-panel         { display: none; }
+.tab-panel.active  { display: block; }
+
+/* ── Tab header ── */
+.tab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  gap: .75rem;
+}
+
+.tab-header h3 {
+  font-size: 1.4rem;
+  color: var(--text);
+}
+
+.btn-refresh {
+  min-height: var(--touch);
+  padding: .5rem 1rem;
+  background: var(--rose-faint);
+  border: 1.5px solid var(--border);
+  color: var(--rose-dark);
+  border-radius: var(--r-pill);
+  font-size: .85rem;
+  font-weight: 700;
+  transition: all var(--t);
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  white-space: nowrap;
+}
+
+.btn-refresh:hover  { background: var(--rose-light); }
+.btn-refresh:active { transform: rotate(-15deg) scale(.94); }
+
+/* ── Date group ── */
+.date-group { margin-bottom: 1.75rem; }
+
+.date-label {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-soft);
+  background: var(--rose-faint);
+  border-radius: var(--r-pill);
+  padding: .3rem .85rem;
+  margin-bottom: .75rem;
+}
+
+/* ── Booking card ──
+   Mobile: stacked layout — all info visible, no truncation
+   Desktop: horizontal row with actions on the right
+── */
+.booking-card {
+  background: var(--white);
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.1rem;
+  margin-bottom: .7rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  transition: box-shadow var(--t), border-color var(--t);
+}
+
+.booking-card:hover { box-shadow: var(--shadow-md); border-color: rgba(232,120,154,.3); }
+.booking-card.done  { background: #fafaf8; border-color: #e8e4e0; opacity: .72; }
+
+/* Top row: time + status badge */
+.booking-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.booking-time {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.6rem;
+  color: var(--rose);
+  line-height: 1;
+}
+
+.status-badge {
+  font-size: .7rem;
+  font-weight: 800;
+  padding: .28rem .8rem;
+  border-radius: var(--r-pill);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-pending { background: var(--rose-faint); color: var(--rose-dark); }
+.badge-done    { background: var(--mint-light); color: var(--mint-dark); }
+
+/* Middle: client info */
+.booking-info { display: flex; flex-direction: column; gap: .2rem; }
+
+.booking-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.booking-service {
+  font-size: .88rem;
+  color: var(--text-mid);
+  font-weight: 600;
+}
+
+/* Phone: full tappable tel: link */
+.booking-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .88rem;
+  color: var(--rose-dark);
+  font-weight: 600;
+  text-decoration: none;
+  min-height: 36px; /* slightly smaller target, it's within a larger card */
+}
+
+.booking-phone:hover { text-decoration: underline; }
+
+/* Bottom: action buttons — full width, stacked on mobile */
+.booking-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+@media (min-width: 500px) {
+  .booking-card     { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .booking-top      { flex-direction: column; align-items: flex-start; gap: .25rem; min-width: 70px; }
+  .booking-info     { flex: 1; min-width: 0; }
+  .booking-actions  { flex-direction: row; align-items: center; flex-shrink: 0; }
+}
+
+.btn-done, .btn-cancel {
+  width: 100%;
+  min-height: var(--touch);
+  border: none;
+  border-radius: var(--r-pill);
+  font-size: .9rem;
+  font-weight: 700;
+  transition: background var(--t), transform var(--t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+}
+
+@media (min-width: 500px) {
+  .btn-done, .btn-cancel { width: auto; padding: .5rem 1.1rem; }
+}
+
+.btn-done {
+  background: var(--mint-light);
+  color: var(--mint-dark);
+}
+
+.btn-done:hover  { background: var(--mint); color: var(--white); }
+.btn-done:active { transform: scale(.95); }
+
+/* Red + full-width cancel — prominent on mobile */
+.btn-cancel {
+  background: #fff0f3;
+  color: var(--error);
+  border: 1.5px solid rgba(192,52,74,.2);
+}
+
+.btn-cancel:hover  { background: #ffe0e6; }
+.btn-cancel:active { transform: scale(.95); }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-soft);
+}
+
+.empty-state .empty-icon { font-size: 2.5rem; display: block; margin-bottom: .7rem; }
+.empty-state p { font-size: .95rem; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — BLOCK SLOTS
+═══════════════════════════════════════════════════════════════ */
+.block-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .block-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    align-items: start;
+  }
+}
+
+.block-form-card,
+.blocked-list-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+
+@media (min-width: 700px) {
+  .block-form-card,
+  .blocked-list-card { padding: 1.6rem; }
+}
+
+.block-form-card h3,
+.blocked-list-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1.1rem;
+  color: var(--text);
+}
+
+.btn-block {
+  width: 100%;
+  min-height: var(--touch);
+  background: linear-gradient(135deg, var(--lilac), var(--lilac-dark));
+  color: var(--white);
+  border-radius: var(--r-pill);
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(154,114,196,.3);
+  transition: opacity var(--t), transform var(--t);
+}
+
+.btn-block:hover  { opacity: .9; transform: translateY(-2px); }
+.btn-block:active { transform: scale(.96); }
+
+.blocked-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .7rem .9rem;
+  border-radius: var(--r-sm);
+  background: var(--lilac-light);
+  border: 1px solid rgba(200,164,224,.25);
+  margin-bottom: .5rem;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--lilac-dark);
+}
+
+/* Unblock button: 44px touch area */
+.btn-unblock {
+  background: none;
+  border: none;
+  color: var(--rose-dark);
+  font-size: 1rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background var(--t);
+  flex-shrink: 0;
+}
+
+.btn-unblock:hover  { background: var(--rose-light); }
+.btn-unblock:active { transform: scale(.9); }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR (desktop only — hidden on mobile touch)
+═══════════════════════════════════════════════════════════════ */
+@media (hover: hover) {
+  ::-webkit-scrollbar       { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--rose-light); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--rose); }
+}
