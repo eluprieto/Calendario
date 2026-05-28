@@ -6,7 +6,7 @@ const bookingSchema = new mongoose.Schema({
   service:     {
     type: String,
     required: true,
-    enum: ['Manicura', 'Esmaltado semipermanente', 'Nail art', 'Esculpidas']
+    enum: ['Manicura', 'Esmaltado semipermanente', 'Nail art']
   },
   date:   { type: String, required: true }, // YYYY-MM-DD
   time:   { type: String, required: true }, // HH:MM

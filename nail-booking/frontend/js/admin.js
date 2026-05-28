@@ -146,7 +146,7 @@ function buildBookingCard(booking, isDone) {
       <div class="booking-top">
         <div class="booking-time">${booking.time}</div>
         <span class="status-badge ${isDone ? 'badge-done' : 'badge-pending'}">
-          ${isDone ? 'Completado' : 'Confirmado'}
+          ${isDone ? 'Completado' : 'Pendiente'}
         </span>
       </div>
 
