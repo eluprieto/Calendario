@@ -1,78 +1,64 @@
 /* ─────────────────────────────────────────────────────────────────
-   booking.js  –  Public booking page (mobile-first)
+   booking.js  –  Public booking page (mobile-first, pink redesign)
 ───────────────────────────────────────────────────────────────── */
 
-const MONTHS = [
-  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
-  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
-];
-const DAYS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MONTHS_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const DAYS_SHORT   = ['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
 
-let selectedDate = null;
-let selectedTime = null;
-let calYear      = new Date().getFullYear();
-let calMonth     = new Date().getMonth();
+let selectedService = null;
+let selectedDate    = null;
+let selectedTime    = null;
 
-// ── Calendar ──────────────────────────────────────────────────────────────
+// ── Service selection ─────────────────────────────────────────────────────
 
-function renderCalendar() {
-  const today    = new Date(); today.setHours(0,0,0,0);
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMo = new Date(calYear, calMonth + 1, 0).getDate();
+function selectService(value) {
+  selectedService = value;
 
-  document.getElementById('month-title').textContent =
-    `${MONTHS[calMonth]} ${calYear}`;
+  // Sync hidden select so submitBooking() validation works unchanged
+  document.getElementById('service').value = value;
 
+  document.querySelectorAll('.service-card').forEach(card => {
+    const isThis = card.dataset.service === value;
+    card.classList.toggle('selected', isThis);
+    card.setAttribute('aria-pressed', String(isThis));
+  });
+}
+
+// ── Date pill strip ───────────────────────────────────────────────────────
+
+function renderDatePills() {
+  const today     = new Date(); today.setHours(0, 0, 0, 0);
+  const container = document.getElementById('date-pills');
   let html = '';
 
-  DAYS.forEach(d => {
-    html += `<div class="cal-header">${d}</div>`;
-  });
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
 
-  for (let i = 0; i < firstDay; i++) {
-    html += `<div class="cal-day empty" aria-hidden="true"></div>`;
-  }
+    const isSun = d.getDay() === 0;
+    if (isSun) continue;
 
-  for (let day = 1; day <= daysInMo; day++) {
-    const date    = new Date(calYear, calMonth, day);
-    const dateStr = toDateStr(calYear, calMonth + 1, day);
-    const dow     = date.getDay();
-    const isPast  = date < today;
-    const isSun   = dow === 0;
-    const isToday = date.toDateString() === today.toDateString();
+    const dateStr = toDateStr(d.getFullYear(), d.getMonth() + 1, d.getDate());
     const isSel   = dateStr === selectedDate;
 
-    let cls = 'cal-day';
-    if (isPast || isSun) cls += ' disabled';
-    if (isToday) cls += ' today';
-    if (isSel)   cls += ' selected';
+    const dayAbbr = DAYS_SHORT[d.getDay()];
+    const dayNum  = d.getDate();
+    const monAbbr = MONTHS_SHORT[d.getMonth()];
 
-    if (!isPast && !isSun) {
-      html += `<div class="${cls}" role="button" tabindex="0"
-                 aria-label="${day} de ${MONTHS[calMonth]}"
-                 aria-pressed="${isSel}"
-                 onclick="selectDate('${dateStr}')"
-                 onkeydown="if(event.key==='Enter'||event.key===' ')selectDate('${dateStr}')"
-               >${day}</div>`;
-    } else {
-      html += `<div class="${cls}" aria-disabled="true">${day}</div>`;
-    }
+    const cls = 'date-pill' + (isSel ? ' selected' : '');
+
+    html += `
+      <button class="${cls}" role="listitem" type="button"
+              aria-label="${dayAbbr} ${dayNum} de ${monAbbr}"
+              aria-pressed="${isSel}"
+              onclick="selectDate('${dateStr}')">
+        <span class="pill-dow">${dayAbbr}</span>
+        <span class="pill-num">${dayNum}</span>
+        <span class="pill-mon">${monAbbr}</span>
+      </button>`;
   }
 
-  document.getElementById('calendar').innerHTML =
-    `<div class="calendar-grid">${html}</div>`;
-}
-
-function prevMonth() {
-  calMonth--;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  renderCalendar();
-}
-
-function nextMonth() {
-  calMonth++;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCalendar();
+  container.innerHTML = html;
 }
 
 // ── Date selection ────────────────────────────────────────────────────────
@@ -80,16 +66,24 @@ function nextMonth() {
 async function selectDate(dateStr) {
   selectedDate = dateStr;
   selectedTime = null;
-  renderCalendar();
-  updateStickyBar();
+
+  // Update pill visual state
+  document.querySelectorAll('.date-pill').forEach(pill => {
+    const isThis = pill.getAttribute('onclick').includes(`'${dateStr}'`);
+    pill.classList.toggle('selected', isThis);
+    pill.setAttribute('aria-pressed', String(isThis));
+  });
+
+  updateCtaBtn();
 
   const section = document.getElementById('time-slots-section');
+  const grid    = document.getElementById('time-slots-grid');
   section.style.display = 'block';
-  section.innerHTML = `
-    <p class="slots-title">Selecciona un horario</p>
-    <div class="loading"><div class="spinner"></div> Cargando horarios…</div>`;
+  grid.innerHTML =
+    `<div class="loading" style="grid-column:1/-1">
+       <div class="spinner"></div> Cargando…
+     </div>`;
 
-  // On mobile, scroll down to show the time slots right after the calendar
   if (window.innerWidth < 700) {
     section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -100,109 +94,68 @@ async function selectDate(dateStr) {
     if (!res.ok) throw new Error(data.error);
     renderTimeSlots(data.slots);
   } catch (err) {
-    section.innerHTML =
-      `<p class="error-msg visible">${err.message || 'Error al cargar horarios'}</p>`;
+    grid.innerHTML =
+      `<p class="error-msg visible" style="grid-column:1/-1">
+         ${err.message || 'Error al cargar horarios'}
+       </p>`;
   }
 }
 
 // ── Time slot rendering ───────────────────────────────────────────────────
 
 function renderTimeSlots(slots) {
-  const section = document.getElementById('time-slots-section');
-  const hasAny  = slots.some(s => s.available);
+  const grid   = document.getElementById('time-slots-grid');
+  const hasAny = slots.some(s => s.available);
 
-  // Vertical stacked list on mobile (full-width pill buttons)
-  let html = `<p class="slots-title">Selecciona un horario</p>
-    <div class="slots-grid" role="list">`;
-
+  let html = '';
   slots.forEach(s => {
     if (s.available) {
       const sel = s.time === selectedTime ? ' selected' : '';
       html += `
-        <button class="time-slot available${sel}"
-                role="listitem"
+        <button class="time-slot${sel}" role="listitem" type="button"
                 aria-pressed="${s.time === selectedTime}"
                 onclick="selectTime('${s.time}')">
           ${s.time}
         </button>`;
     } else {
       html += `
-        <button class="time-slot unavailable" role="listitem"
+        <button class="time-slot taken" role="listitem" type="button"
                 disabled aria-disabled="true">
           ${s.time}
         </button>`;
     }
   });
 
-  html += '</div>';
-
   if (!hasAny) {
-    html += `<p class="slots-empty">Sin horarios disponibles este día</p>`;
+    html += `<p class="no-slots-msg">Sin horarios disponibles este día</p>`;
   }
 
-  section.innerHTML = html;
+  grid.innerHTML = html;
 }
 
 // ── Time selection ────────────────────────────────────────────────────────
 
 function selectTime(time) {
   selectedTime = time;
-  updateStickyBar();
+  updateCtaBtn();
 
-  // Update pressed state
-  document.querySelectorAll('.time-slot.available').forEach(btn => {
+  document.querySelectorAll('.time-slot:not(.taken)').forEach(btn => {
     const isThis = btn.textContent.trim() === time;
     btn.classList.toggle('selected', isThis);
-    btn.setAttribute('aria-pressed', isThis);
+    btn.setAttribute('aria-pressed', String(isThis));
   });
 
-  // On mobile, scroll down to the form so user can fill in their details
   if (window.innerWidth < 700) {
-    document.getElementById('form-card')
+    document.getElementById('booking-form')
       .scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 
-// ── Sticky bar (mobile CTA) ───────────────────────────────────────────────
+// ── CTA button state ──────────────────────────────────────────────────────
 
-function updateStickyBar() {
-  const promptEl    = document.getElementById('cta-prompt');
-  const selectionEl = document.getElementById('cta-selection');
-  const stickyBtn   = document.getElementById('sticky-btn');
-
-  if (selectedDate && selectedTime) {
-    const fmtDate = new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', {
-      weekday: 'short', day: 'numeric', month: 'short'
-    });
-    promptEl.style.display    = 'none';
-    selectionEl.style.display = 'block';
-    selectionEl.textContent   = `📅 ${fmtDate}  ·  🕐 ${selectedTime}`;
-    stickyBtn.disabled        = false;
-  } else if (selectedDate) {
-    promptEl.textContent      = 'Ahora selecciona una hora';
-    promptEl.style.display    = 'block';
-    selectionEl.style.display = 'none';
-    stickyBtn.disabled        = true;
-  } else {
-    promptEl.textContent      = 'Selecciona fecha y hora';
-    promptEl.style.display    = 'block';
-    selectionEl.style.display = 'none';
-    stickyBtn.disabled        = true;
-  }
-
-  // Also keep the booking summary pill in the form card in sync
-  const summary = document.getElementById('booking-summary');
-  if (selectedDate || selectedTime) {
-    const fmtDate = selectedDate
-      ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES',{
-          weekday:'short', day:'numeric', month:'short'
-        })
-      : '—';
-    summary.textContent = `📅 ${fmtDate}  ·  🕐 ${selectedTime || '—'}`;
-    summary.classList.add('visible');
-  } else {
-    summary.classList.remove('visible');
-  }
+function updateCtaBtn() {
+  const btn = document.getElementById('cta-btn');
+  btn.disabled = !(selectedDate && selectedTime);
 }
 
 // ── Form submission ───────────────────────────────────────────────────────
@@ -216,16 +169,15 @@ async function submitBooking(e) {
 
   clearError();
 
-  if (!selectedDate) { return showError('Por favor selecciona una fecha en el calendario'); }
-  if (!selectedTime) { return showError('Por favor selecciona un horario'); }
   if (!service)      { return showError('Por favor selecciona un servicio'); }
+  if (!selectedDate) { return showError('Por favor selecciona una fecha'); }
+  if (!selectedTime) { return showError('Por favor selecciona un horario'); }
   if (!clientName)   { return showError('Por favor ingresa tu nombre'); }
   if (!phone)        { return showError('Por favor ingresa tu número de teléfono'); }
 
-  // Disable both buttons
-  const inlineBtn  = document.getElementById('submit-btn');
-  const stickyBtn  = document.getElementById('sticky-btn');
-  setLoading(true, inlineBtn, stickyBtn);
+  const btn = document.getElementById('cta-btn');
+  btn.disabled    = true;
+  btn.textContent = 'Confirmando…';
 
   try {
     const res  = await fetch('/api/bookings', {
@@ -239,26 +191,19 @@ async function submitBooking(e) {
       showConfirmation(data.booking);
     } else {
       showError(data.error || 'No se pudo completar la reserva');
-      setLoading(false, inlineBtn, stickyBtn);
-      // If the slot just got taken, refresh availability
+      btn.disabled    = false;
+      btn.textContent = 'Reservar';
       if (data.error && data.error.includes('disponible')) {
         await selectDate(selectedDate);
         selectedTime = null;
-        updateStickyBar();
+        updateCtaBtn();
       }
     }
   } catch {
     showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
-    setLoading(false, inlineBtn, stickyBtn);
+    btn.disabled    = false;
+    btn.textContent = 'Reservar';
   }
-}
-
-function setLoading(loading, ...btns) {
-  btns.forEach(btn => {
-    if (!btn) return;
-    btn.disabled    = loading;
-    btn.textContent = loading ? 'Confirmando…' : (btn === document.getElementById('sticky-btn') ? 'Reservar' : 'Confirmar Reserva');
-  });
 }
 
 // ── Full-screen confirmation ──────────────────────────────────────────────
@@ -274,35 +219,37 @@ function showConfirmation(booking) {
   document.getElementById('conf-date').textContent    = fmtDate;
   document.getElementById('conf-time').textContent    = booking.time + ' hs';
 
-  // Hide sticky bar while overlay is shown
-  document.getElementById('sticky-cta').style.display = 'none';
-
-  // Show full-screen overlay with animation
   const overlay = document.getElementById('confirm-overlay');
   overlay.classList.add('active');
-  // Prevent background scroll
   document.body.style.overflow = 'hidden';
 }
 
 function resetBooking() {
-  selectedDate = null;
-  selectedTime = null;
+  selectedService = null;
+  selectedDate    = null;
+  selectedTime    = null;
 
   document.getElementById('booking-form').reset();
-  document.getElementById('time-slots-section').style.display = 'none';
-  document.getElementById('time-slots-section').innerHTML = '';
+  document.getElementById('service').value = '';
+
+  document.querySelectorAll('.service-card').forEach(card => {
+    card.classList.remove('selected');
+    card.setAttribute('aria-pressed', 'false');
+  });
+
+  const section = document.getElementById('time-slots-section');
+  section.style.display = 'none';
+  document.getElementById('time-slots-grid').innerHTML = '';
+
   document.getElementById('confirm-overlay').classList.remove('active');
-  document.getElementById('sticky-cta').style.display = '';
   document.body.style.overflow = '';
 
-  const inlineBtn = document.getElementById('submit-btn');
-  const stickyBtn = document.getElementById('sticky-btn');
-  inlineBtn.textContent = 'Confirmar Reserva';
-  stickyBtn.textContent = 'Reservar';
+  const btn = document.getElementById('cta-btn');
+  btn.disabled    = true;
+  btn.textContent = 'Reservar';
 
   clearError();
-  updateStickyBar();
-  renderCalendar();
+  renderDatePills();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -326,5 +273,5 @@ function toDateStr(y, m, d) {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
-renderCalendar();
-updateStickyBar();
+renderDatePills();
+updateCtaBtn();

@@ -2,107 +2,110 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!--
-    maximum-scale=1 prevents iOS from zooming on input focus.
-    We already set font-size:16px on all inputs to make this unnecessary,
-    but this is a belt-and-suspenders guard.
-  -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Nail Studio – Reserva tu cita</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
-  <header class="hero">
-    <span class="hero-nail">💅</span>
-    <h1>Nail Studio</h1>
-    <p>Belleza en cada detalle</p>
-    <div class="hero-wave">
-      <svg viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,30 C300,60 900,0 1200,30 L1200,60 L0,60 Z" fill="#fff8fb"/>
-      </svg>
-    </div>
+  <!-- ═══ HEADER ══════════════════════════════════════════════════════════ -->
+  <header class="app-header">
+    <div class="studio-name">Nail Studio</div>
+    <div class="studio-sub">Belleza en cada detalle</div>
   </header>
 
-  <!-- ═══ BOOKING ════════════════════════════════════════════════════════ -->
-  <main class="booking-section">
-    <div class="container">
+  <!-- ═══ MAIN ═════════════════════════════════════════════════════════════ -->
+  <main class="main-content">
 
-      <h2 class="section-title">Reserva tu cita</h2>
-      <p class="section-sub">Elige fecha, horario y servicio</p>
+    <!-- ── Services ────────────────────────────────────────────────── -->
+    <section class="section">
+      <div class="section-label">Elige tu servicio</div>
+      <div class="service-grid" id="service-grid">
+        <button class="service-card" type="button"
+                data-service="Manicura"
+                aria-pressed="false"
+                onclick="selectService('Manicura')">
+          <span class="service-icon">💅</span>
+          <span class="service-name">Manicura</span>
+        </button>
+        <button class="service-card" type="button"
+                data-service="Esmaltado semipermanente"
+                aria-pressed="false"
+                onclick="selectService('Esmaltado semipermanente')">
+          <span class="service-icon">✨</span>
+          <span class="service-name">Semipermanente</span>
+        </button>
+        <button class="service-card" type="button"
+                data-service="Nail art"
+                aria-pressed="false"
+                onclick="selectService('Nail art')">
+          <span class="service-icon">🎨</span>
+          <span class="service-name">Nail art</span>
+        </button>
+        <button class="service-card" type="button"
+                data-service="Esculpidas"
+                aria-pressed="false"
+                onclick="selectService('Esculpidas')">
+          <span class="service-icon">💎</span>
+          <span class="service-name">Esculpidas</span>
+        </button>
+      </div>
+      <!-- Hidden select kept in sync — submitBooking() reads this -->
+      <select id="service" required style="display:none" aria-hidden="true" tabindex="-1">
+        <option value="">Selecciona un servicio…</option>
+        <option value="Manicura">Manicura</option>
+        <option value="Esmaltado semipermanente">Esmaltado semipermanente</option>
+        <option value="Nail art">Nail art</option>
+        <option value="Esculpidas">Esculpidas</option>
+      </select>
+    </section>
 
-      <!-- Wrapper hidden when confirmation is shown -->
-      <div id="booking-wrapper">
-        <div class="booking-layout">
+    <!-- ── Date ──────────────────────────────────────────────────────── -->
+    <section class="section">
+      <div class="section-label">Elige tu fecha</div>
+      <div class="date-strip-wrap">
+        <div class="date-strip" id="date-pills" role="list" aria-label="Selecciona una fecha"></div>
+      </div>
+    </section>
 
-          <!-- ── Col A: Calendar + Time Slots ── -->
-          <div class="card" id="calendar-card">
-            <div class="calendar-nav">
-              <button class="nav-btn" onclick="prevMonth()" aria-label="Mes anterior">&#8249;</button>
-              <h3 id="month-title"></h3>
-              <button class="nav-btn" onclick="nextMonth()" aria-label="Mes siguiente">&#8250;</button>
-            </div>
-            <div id="calendar"></div>
+    <!-- ── Time Slots ─────────────────────────────────────────────────── -->
+    <div id="time-slots-section" style="display:none">
+      <section class="section">
+        <div class="section-label">Elige tu horario</div>
+        <div class="time-grid" id="time-slots-grid" role="list"></div>
+      </section>
+    </div>
 
-            <!-- Time slots injected here after date selection -->
-            <div id="time-slots-section" class="slots-section" style="display:none"></div>
-          </div>
+    <!-- ── Personal Details ───────────────────────────────────────────── -->
+    <section class="section">
+      <div class="section-label">Tus datos</div>
+      <form id="booking-form" onsubmit="submitBooking(event)" novalidate>
+        <div class="form-group">
+          <label for="clientName">Nombre</label>
+          <input type="text" id="clientName" placeholder="Tu nombre completo"
+                 required autocomplete="name" minlength="2">
+        </div>
+        <div class="form-group">
+          <label for="phone">Teléfono</label>
+          <input type="tel" id="phone" placeholder="+34 600 000 000"
+                 required autocomplete="tel">
+        </div>
+        <div id="error-msg" class="error-msg" role="alert"></div>
+      </form>
+    </section>
 
-          <!-- ── Col B: Form ── -->
-          <div class="card" id="form-card">
-            <!-- Summary pill: shows selected date + time -->
-            <div id="booking-summary" class="booking-summary"></div>
-
-            <form id="booking-form" onsubmit="submitBooking(event)" novalidate>
-
-              <div class="form-group">
-                <label for="service">Servicio</label>
-                <select id="service" required>
-                  <option value="">Selecciona un servicio…</option>
-                  <option value="Manicura">Manicura</option>
-                  <option value="Esmaltado semipermanente">Esmaltado semipermanente</option>
-                  <option value="Nail art">Nail art</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="clientName">Tu nombre</label>
-                <input type="text" id="clientName" placeholder="Nombre completo"
-                       required autocomplete="name" minlength="2">
-              </div>
-
-              <div class="form-group">
-                <label for="phone">Teléfono</label>
-                <input type="tel" id="phone" placeholder="+34 600 000 000"
-                       required autocomplete="tel">
-              </div>
-
-              <div id="error-msg" class="error-msg" role="alert"></div>
-
-              <!-- Desktop-only inline submit button -->
-              <button type="submit" id="submit-btn" class="btn-primary btn-in-form">
-                Confirmar Reserva
-              </button>
-
-            </form>
-          </div>
-
-        </div><!-- /booking-layout -->
-      </div><!-- /booking-wrapper -->
-
-    </div><!-- /container -->
   </main>
 
   <!-- ═══ FULL-SCREEN CONFIRMATION OVERLAY ══════════════════════════════ -->
-  <div id="confirm-overlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-label="Reserva confirmada">
-    <div class="confirm-card">
-      <span class="confirm-emoji">🎉</span>
-      <h2>¡Reserva Confirmada!</h2>
-      <p>Te esperamos con mucho cariño. ¡Hasta pronto!</p>
+  <div id="confirm-overlay" class="confirm-overlay"
+       role="dialog" aria-modal="true" aria-label="Reserva confirmada">
+    <div class="confirm-content">
+      <div class="check-circle">✓</div>
+      <h2 class="confirm-title">¡Reserva Confirmada!</h2>
+      <p class="confirm-sub">Te esperamos con mucho cariño</p>
 
       <div class="confirm-details">
         <div class="confirm-row">
@@ -123,22 +126,16 @@
         </div>
       </div>
 
-      <button onclick="resetBooking()" class="btn-secondary">
-        Hacer otra reserva
+      <button onclick="resetBooking()" class="new-booking-btn">
+        Nueva reserva
       </button>
     </div>
   </div>
 
-  <!-- ═══ STICKY CTA BAR (mobile only) ══════════════════════════════════ -->
-  <div class="sticky-cta" id="sticky-cta" aria-live="polite">
-    <div class="sticky-cta-info">
-      <div class="cta-prompt" id="cta-prompt">Selecciona fecha y hora</div>
-      <div class="cta-selection" id="cta-selection" style="display:none"></div>
-    </div>
-    <button class="sticky-btn" id="sticky-btn" onclick="submitBooking(event)" disabled>
-      Reservar
-    </button>
-  </div>
+  <!-- ═══ FIXED CTA BUTTON ════════════════════════════════════════════ -->
+  <button id="cta-btn" class="cta-btn" onclick="submitBooking(event)" disabled>
+    Reservar
+  </button>
 
   <!-- Toast container -->
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
