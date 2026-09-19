@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/admin", "destination": "/nail-booking/frontend/admin.html" },
+    { "source": "/", "destination": "/nail-booking/frontend/index.html" },
+    { "source": "/(.*)", "destination": "/nail-booking/frontend/$1" }
+  ]
+}
